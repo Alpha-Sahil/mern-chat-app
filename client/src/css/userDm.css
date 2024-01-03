@@ -1,0 +1,101 @@
+.user-dm-container {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    /* padding-top: 1em; */
+    /* padding-bottom: 1em; */
+}
+
+.users {
+    width: 40%;
+    flex: 400px;
+}
+
+.message-container {
+    width: 40%;
+    flex: 400px;
+}
+
+.user-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    justify-content: center;
+    text-align: center;
+}
+
+.single-user-container {
+    background-color: white;
+    color: black;
+    margin: 1em;
+    border-radius: 1em;
+    cursor: pointer;
+    padding: 1em;
+}
+
+.message-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-message {
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+    gap: 1em;
+}
+
+.current-user-message {
+
+}
+
+.single-message {
+    padding: 1em;
+    border-radius: 1em;
+}
+
+.current-user {
+    background-color: yellow;
+    color: black;
+}
+
+.selected-user {
+    background-color: #fff;
+    color: black;
+}
+
+.dm-time {
+    float: right;
+    margin-top: 10px;
+}
+
+.message-user-dm {
+    padding: 1em;
+}
+
+.vampire-dm-input {
+    resize: none;
+    border: none;
+    border-radius: 1em;
+    width: 100%;
+    padding: .5em;
+    outline: none;
+    margin-top: 5px;
+}
+
+.message-user-dm {
+    display: flex;
+    flex-wrap: nowrap;
+    width: 100%;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.message-user-dm-container {
+    width: 70%;
+    height: 100%;
+}
+
+.message-user-dm-send {
+
+}

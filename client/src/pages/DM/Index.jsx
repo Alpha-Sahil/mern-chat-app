@@ -114,68 +114,63 @@ export default function Index () {
 
     return(
         <selectUserForMessageContext.Provider value={{ selectedUserMessages }} >
-        <AppLayout>
-            <section>
-            <div className="main-container">
-                <div className="dm-container">
-                    <div className="user-container">
-                        {users.map((singleUser, i) => {
-                            return <div key={i} className="list-container" onClick={ () => selectedUserMessages(singleUser)}>
-                                <div className="profile-name">{ singleUser.name }</div>
-                                <div>{
-                                    (messageReceivedFrom === singleUser._id)
-                                    &&
-                                    <i className="fa-solid fa-circle-dot"></i>
-                                    // <img className="notification-icon" src={notificationIcon} alt="" />
-                                }</div>
+            <AppLayout>
+                <section>
+                    <div className="main-container">
+                        <div className="dm-container">
+                            <div className="user-container">
+                                {users.map((singleUser, i) => {
+                                    return <div key={i} className="list-container" onClick={ () => selectedUserMessages(singleUser)}>
+                                        <div className="profile-name">{ singleUser.name }</div>
+                                        <div>{
+                                            (messageReceivedFrom === singleUser._id)
+                                            &&
+                                            <i className="fa-solid fa-circle-dot"></i>
+                                        }</div>
+                                    </div>
+                                })}
                             </div>
-                        })}
-                    </div>
-                    <div className="message-container">
-                        <div className="heading-message">
-                            <h2>
-                                {selectedUser.name} <br />
-                                {
-                                    isLoading && <i className="fa-solid fa-hurricane fa-spin"></i>
-                                }
-                            </h2> 
-                        </div>
-                        <div className="message-box-main" ref={scrollToBottom}>
-                            {messages.map((message, j) => {
-                                return <div className={`single-message-box ${ message.from == user._id ? 'another-user' : 'current'}`} key={j}>
-                                    <div className="vampire-link">
-                                        <i className="fa-regular fa-user"></i>
-                                    </div>
-                                    <div className="main-message">
-                                        {message.message}
-                                    </div>
+                            <div className="message-container">
+                                <div className="heading-message">
+                                    <h2>
+                                        {selectedUser.name} <br />
+                                        {
+                                            isLoading && <i className="fa-solid fa-hurricane fa-spin"></i>
+                                        }
+                                    </h2> 
                                 </div>
-                            })}
-                        </div>
-                        <form onSubmit={handleSubmit}>
-                            <div className="message-user-dm">
-                                    <div className="message-user-dm-container">
-                                        <textarea
-                                            className="vampire-dm-input"
-                                            rows="2"
-                                            value={typedMessage}
-                                            onChange={e => setTypedMessage(e.target.value)}></textarea>
+                                <div className="message-box-main" ref={scrollToBottom}>
+                                    {messages.map((message, j) => {
+                                        return <div className={`single-message-box ${ message.from == user._id ? 'another-user' : 'current'}`} key={j}>
+                                            <div className="vampire-link">
+                                                <i className="fa-regular fa-user"></i>
+                                            </div>
+                                            <div className="main-message">
+                                                {message.message}
+                                            </div>
+                                        </div>
+                                    })}
+                                </div>
+                                <form onSubmit={handleSubmit}>
+                                    <div className="message-user-dm">
+                                            <div className="message-user-dm-container">
+                                                <textarea
+                                                    className="vampire-dm-input"
+                                                    rows="2"
+                                                    value={typedMessage}
+                                                    onChange={e => setTypedMessage(e.target.value)}></textarea>
+                                            </div>
+                                            <button type="submit" role="button" className="vampire-link">
+                                                <i className="fa-regular fa-paper-plane"></i>
+                                            </button>
                                     </div>
-                            
-                                    {/* <div className="vampire-link" onClick={sendMessage}>
-                                        <i className="fa-regular fa-paper-plane"></i>
-                                    </div> */}
-                                    <button type="submit" role="button" className="vampire-link">
-                                        <i className="fa-regular fa-paper-plane"></i>
-                                    </button>
+                                </form>
                             </div>
-                        </form>
+                            <div className="profile-container"></div>
+                        </div>
                     </div>
-                    <div className="profile-container"></div>
-                </div>
-            </div>
-            </section>
-        </AppLayout>
+                </section>
+            </AppLayout>
         </selectUserForMessageContext.Provider>
     )
 }

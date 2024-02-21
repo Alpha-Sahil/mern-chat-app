@@ -153,16 +153,16 @@ export default function Index () {
                                 </div>
                                 <form onSubmit={handleSubmit}>
                                     <div className="message-user-dm">
-                                            <div className="message-user-dm-container">
-                                                <textarea
-                                                    className="vampire-dm-input"
-                                                    rows="2"
-                                                    value={typedMessage}
-                                                    onChange={e => setTypedMessage(e.target.value)}></textarea>
-                                            </div>
-                                            <button type="submit" role="button" className="vampire-link">
-                                                <i className="fa-regular fa-paper-plane"></i>
-                                            </button>
+                                        <div className="message-user-dm-container">
+                                            <textarea
+                                                className="vampire-dm-input"
+                                                rows="2"
+                                                value={typedMessage}
+                                                onChange={e => setTypedMessage(e.target.value)}></textarea>
+                                        </div>
+                                        <button type="submit" role="button" className="vampire-link">
+                                            <i className="fa-regular fa-paper-plane"></i>
+                                        </button>
                                     </div>
                                 </form>
                             </div>

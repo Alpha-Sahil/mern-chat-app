@@ -1,76 +1,181 @@
+import AppLayout from "../../layouts/AppLayout"
+import selectUserForMessageContext from "../../context/selectUserForMessageContext"
+import socket from "../../Socket.js"
+import useUsers from "../../hooks/useUsers"
+import axios from 'axios';
+import React, { useState, useEffect, useRef } from 'react'
+import { useNavigate } from "react-router-dom";
+
 export default function Index () {
+    const navigateTo = useNavigate()
+    const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')))
+    const [users, setUsers] = useUsers(user)
+    const [selectedUser, setSelectedUser] = useState([])
+    const [messages, setMessages] = useState([])
+    const [typedMessage, setTypedMessage] = useState('')
+    const [currentInbox, setCurrentInbox] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
+    const [messageReceivedFrom, setmessageReceivedFrom] = useState([])
+    const scrollToBottom = useRef(null)
+    let controller;
+    let headers = {'x-token': localStorage.getItem('token')}
+
+    socket.on('connect', () => {
+        socket.emit('user:update_socket_id', {
+            email: user.email
+        })
+    })
+
+    useEffect(() => {
+        scrollToBottom.current.scrollTop = scrollToBottom.current.scrollHeight;
+    }, [messages])
+
+    const selectedUserMessages = (selectedUser) => {
+        setIsLoading(true)
+
+        setSelectedUser(selectedUser)
+
+        setMessages([])
+
+        if (controller) controller.abort()
+
+        controller = new AbortController()
+
+        axios.post(`http://localhost:3000/dm/users/${selectedUser._id}/messages`,
+            { users: [selectedUser._id, user._id] },
+            { signal: controller.signal,
+                headers: headers 
+            },
+        ).then( (response) => {
+            let inbox = response.data?.inbox?.length
+                        ? response.data?.inbox[0]
+                        : ''
+
+            setCurrentInbox(inbox)
+
+            setTimeout(() => {
+                setMessages(response.data.messages)
+                setIsLoading(false)
+                setmessageReceivedFrom(false)
+            }, 500)
+        })
+        .catch(error => console.log(error))
+    }
+
+    const createInbox = (user) => {
+        let users = [user, JSON.parse(localStorage.getItem('user'))]
+
+        axios.post(`http://localhost:3000/dm/inbox/create`, {
+            users: users
+        })
+        .then( (response) => {
+            alert('Create')
+        })
+        .catch(error => navigateTo('/'))
+    }
+
+    const sendMessage = async () => {
+        if (!currentInbox) {
+            let inbox = await axios.post(`http://localhost:3000/inboxes/create`, {
+                users: [user._id, selectedUser._id]
+            }, {headers: headers})
+            setCurrentInbox(inbox.data.inbox[0])
+        }
+
+        let message = [{
+            message: typedMessage,
+            from: user._id,
+            to: selectedUser._id,
+            inbox: currentInbox,
+        }]
+
+        socket.emit('message:send', message[0])
+
+        setMessages([...messages, ...message])
+
+        setTypedMessage('')
+    }
+
+    socket.on('message:recived', (data) => {        
+        setmessageReceivedFrom(data[0].from)
+
+        let newMessages = data[0].inbox === currentInbox._id
+                            ? [...messages, ...data]
+                            : messages
+
+        setMessages(newMessages)
+    })
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        if (typedMessage) sendMessage()
+    }
+
     return(
-        <>
+        <selectUserForMessageContext.Provider value={{ selectedUserMessages }} >
+        <AppLayout>
             <section>
-                <div className="header section-layout">
-                    <div className="user-dm-container">
-                        <div className="users">
-                            <div className="user-container">
-                                <div className="single-user">
-                                    <div className="single-user-container">
-                                        <div className="user-name">Vampy</div>
-                                        <div className="lastest-message">Hello bro</div>
-                                    </div>
-                                    <div className="single-user-container">
-                                        <div className="user-name">Vampy</div>
-                                        <div className="lastest-message">Hello bro</div>
-                                    </div>
-                                </div>
+            <div className="main-container">
+                <div className="dm-container">
+                    <div className="user-container">
+                        {users.map((singleUser, i) => {
+                            return <div key={i} className="list-container" onClick={ () => selectedUserMessages(singleUser)}>
+                                <div className="profile-name">{ singleUser.name }</div>
+                                <div>{
+                                    (messageReceivedFrom === singleUser._id)
+                                    &&
+                                    <i className="fa-solid fa-circle-dot"></i>
+                                    // <img className="notification-icon" src={notificationIcon} alt="" />
+                                }</div>
                             </div>
-                        </div>
-                        <div className="message-container">
-                            <div className="message-box">
-                                <div className="user-message">
-                                    <div className="selected-user single-message">
-                                        <div className="message">
-                                            Lorem Ipsum is simply dummy text of the printing and 
-                                            typesetting industry. Lorem Ipsum has been the industry`s
-
-                                            <small className="dm-time">time</small>
-                                        </div>
-                                    </div>
-
-                                    <div className="current-user single-message">
-                                        <div className="message">
-                                            Lorem Ipsum is simply dummy text of the printing and 
-                                            typesetting industry. Lorem Ipsum has been the industry`s
-
-                                            <small className="dm-time">time</small>
-                                        </div>
-                                    </div>
-
-                                    <div className="selected-user single-message">
-                                        <div className="message">
-                                            Lorem Ipsum is simply dummy text of the printing and 
-                                            typesetting industry. Lorem Ipsum has been the industry`s
-
-                                            <small className="dm-time">time</small>
-                                        </div>
-                                    </div>
-
-                                    <div className="current-user single-message">
-                                        <div className="message">
-                                            Lorem Ipsum is simply dummy text of the printing and 
-                                            typesetting industry. Lorem Ipsum has been the industry`s
-
-                                            <small className="dm-time">time</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="message-user-dm">
-                                    <div className="message-user-dm-container">
-                                        <textarea className="vampire-dm-input" rows="2"></textarea>
-                                    </div>
-
-                                    <div className="vampire-link">
-                                        <i className="fa-regular fa-paper-plane"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        })}
                     </div>
+                    <div className="message-container">
+                        <div className="heading-message">
+                            <h2>
+                                {selectedUser.name} <br />
+                                {
+                                    isLoading && <i className="fa-solid fa-hurricane fa-spin"></i>
+                                }
+                            </h2> 
+                        </div>
+                        <div className="message-box-main" ref={scrollToBottom}>
+                            {messages.map((message, j) => {
+                                return <div className={`single-message-box ${ message.from == user._id ? 'another-user' : 'current'}`} key={j}>
+                                    <div className="vampire-link">
+                                        <i className="fa-regular fa-user"></i>
+                                    </div>
+                                    <div className="main-message">
+                                        {message.message}
+                                    </div>
+                                </div>
+                            })}
+                        </div>
+                        <form onSubmit={handleSubmit}>
+                            <div className="message-user-dm">
+                                    <div className="message-user-dm-container">
+                                        <textarea
+                                            className="vampire-dm-input"
+                                            rows="2"
+                                            value={typedMessage}
+                                            onChange={e => setTypedMessage(e.target.value)}></textarea>
+                                    </div>
+                            
+                                    {/* <div className="vampire-link" onClick={sendMessage}>
+                                        <i className="fa-regular fa-paper-plane"></i>
+                                    </div> */}
+                                    <button type="submit" role="button" className="vampire-link">
+                                        <i className="fa-regular fa-paper-plane"></i>
+                                    </button>
+                            </div>
+                        </form>
+                    </div>
+                    <div className="profile-container"></div>
                 </div>
+            </div>
             </section>
-        </>
+        </AppLayout>
+        </selectUserForMessageContext.Provider>
     )
 }

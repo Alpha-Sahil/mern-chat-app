@@ -43,6 +43,15 @@
     flex-direction: column;
     padding: 1em;
     gap: 1em;
+    position: relative;
+    max-height: 692px;
+    overflow-y: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;  
+}
+
+.user-message::-webkit-scrollbar {
+    display: none;
 }
 
 .current-user-message {
@@ -98,4 +107,23 @@
 
 .message-user-dm-send {
 
+}
+
+.single-user-container:hover {
+    background-color: #0001;
+}
+
+.name-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: .5em;
+}
+
+.notification-icon {
+    height: 2.5em;
+    width: 2.5em;
+    background-color: #0005;
+    border-radius: 50%;
 }

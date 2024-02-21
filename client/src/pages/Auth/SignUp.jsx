@@ -1,16 +1,27 @@
 import axios from 'axios';
+import { useState } from 'react';
 import  { useForm }  from  "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
-export default function SignUp () {
-    let navigateTo = useNavigate()
+export default function SignUp ({ registered }) {
+    const navigateTo = useNavigate()
+
+    const [showLoading, setShowLoading] = useState(false)
+
     const { register, handleSubmit, formState:{errors} } = useForm();
 
     const submit = (data) => {
+        setShowLoading(true)
+
         axios.post('http://localhost:3000/register', {
             data: data
         }).then((response) => {
-            console.log(response)
+            localStorage.setItem('token', response.data.token)
+
+            localStorage.setItem('user', JSON.stringify(response.data.user))
+
+            registered()
+
             navigateTo('/message')
         })
     }
@@ -54,8 +65,10 @@ export default function SignUp () {
 
                     <div className="form-button">
                         <button className="chatting-button" type="submit">
-                            Sign in
-                            <i className="fa-solid fa-circle-notch fa-spin"></i>
+                            <span>
+                                Sign in &nbsp;
+                                {showLoading && <i className="fa-solid fa-circle-notch fa-spin"></i>}
+                            </span>
                         </button>
                     </div>
                 </div>

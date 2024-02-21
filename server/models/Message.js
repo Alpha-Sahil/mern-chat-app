@@ -1,4 +1,11 @@
 const mongoose = require('mongoose')
+const { Schema } = mongoose;
+
+const STATUS = {
+    sent: 'sent',
+    draft: 'draft',
+    deleted: 'deleted'
+}
 
 const Message = mongoose.Schema({
     message: {
@@ -19,5 +26,11 @@ const Message = mongoose.Schema({
         type: Schema.Types.ObjectId,
         required: true,
         ref: 'inboxes',
+    },
+    status: {
+        type: String,
+        required: true,
     }
 })
+
+module.exports = mongoose.model('Message', Message);

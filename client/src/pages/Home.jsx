@@ -1,11 +1,15 @@
+import GuestLayout from "../layouts/GuestLayout"
 import Banner from "../components/Banner"
 import extra from "../assets/images/extra.png"
 import messageImage from "../assets/images/message.png"
 import signUpImage from "../assets/images/signup.png"
+import useLogin from "../hooks/useLogin"
 
 export default function Home () {
+    useLogin()
+
     return(
-        <>
+        <GuestLayout>
             <Banner />
             <section>
                 <div className="extra-section-layout about-app-container in-actiave">
@@ -48,7 +52,7 @@ export default function Home () {
                             <div className="form">
                                 <div className="form-input">
                                     <label htmlFor="name">Email</label><br /><br />
-                                    <input type="text" />
+                                    <input type="email" />
                                 </div>
                             </div>
                             <div className="form">
@@ -61,6 +65,6 @@ export default function Home () {
                     </div>
                 </div>
             </section>
-        </>
+        </GuestLayout>
     )
 }

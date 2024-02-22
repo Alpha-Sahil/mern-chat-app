@@ -33,7 +33,7 @@ export default function Index () {
     const selectedUserMessages = (selectedUser) => {
         setIsLoading(true)
 
-        setSelectedUser(selectedUser)
+        setSelectedUser(selectedUser.user)
 
         setMessages([])
 
@@ -41,17 +41,13 @@ export default function Index () {
 
         controller = new AbortController()
 
-        axios.post(`http://localhost:3000/dm/users/${selectedUser._id}/messages`,
-            { users: [selectedUser._id, user._id] },
+        axios.post(`http://localhost:3000/dm/users/${selectedUser.user._id}/messages`,
+            { users: selectedUser.inbox._id },
             { signal: controller.signal,
                 headers: headers 
             },
         ).then( (response) => {
-            let inbox = response.data?.inbox?.length
-                        ? response.data?.inbox[0]
-                        : ''
-
-            setCurrentInbox(inbox)
+            setCurrentInbox(selectedUser.inbox)
 
             setTimeout(() => {
                 setMessages(response.data.messages)
@@ -62,31 +58,20 @@ export default function Index () {
         .catch(error => console.log(error))
     }
 
-    const createInbox = (user) => {
-        let users = [user, JSON.parse(localStorage.getItem('user'))]
-
-        axios.post(`http://localhost:3000/dm/inbox/create`, {
-            users: users
-        })
-        .then( (response) => {
-            alert('Create')
-        })
-        .catch(error => navigateTo('/'))
-    }
-
     const sendMessage = async () => {
-        if (!currentInbox) {
-            let inbox = await axios.post(`http://localhost:3000/inboxes/create`, {
+        let inbox
+
+        if (!currentInbox.length) {
+            inbox = await axios.post(`http://localhost:3000/inboxes/create`, {
                 users: [user._id, selectedUser._id]
             }, {headers: headers})
-            setCurrentInbox(inbox.data.inbox[0])
         }
 
         let message = [{
             message: typedMessage,
             from: user._id,
             to: selectedUser._id,
-            inbox: currentInbox,
+            inbox: inbox.data.inbox,
         }]
 
         socket.emit('message:send', message[0])
@@ -94,6 +79,8 @@ export default function Index () {
         setMessages([...messages, ...message])
 
         setTypedMessage('')
+
+        setCurrentInbox(inbox.data.inbox)
     }
 
     socket.on('message:recived', (data) => {        
@@ -121,9 +108,9 @@ export default function Index () {
                             <div className="user-container">
                                 {users.map((singleUser, i) => {
                                     return <div key={i} className="list-container" onClick={ () => selectedUserMessages(singleUser)}>
-                                        <div className="profile-name">{ singleUser.name }</div>
+                                        <div className="profile-name">{ singleUser.user.name }</div>
                                         <div>{
-                                            (messageReceivedFrom === singleUser._id)
+                                            (messageReceivedFrom === singleUser.user._id)
                                             &&
                                             <i className="fa-solid fa-circle-dot"></i>
                                         }</div>

@@ -3,15 +3,17 @@ import axios from "axios"
 import selectUserForMessageContext from "../context/selectUserForMessageContext"
 
 export default function Search () {
-    const {selectedUser, setSelectedUser, selectedUserMessages} = useContext(selectUserForMessageContext)
+    const {selectedUserMessages} = useContext(selectUserForMessageContext)
 
     const [users, setUsers] = useState([])
+
+    let user = JSON.parse(localStorage.getItem('user'))
     
     const searchUsers = async (e) => {
         if (!e.target.value) return setUsers([])
  
         let results =  await axios.get('http://localhost:3000/dm/search/users',
-            { params: {text: e.target.value}},
+            { params: {currentUser: user._id, text: e.target.value}},
             {Headers: {'x-token': localStorage.getItem('token')}})
 
         setUsers(results.data.users)
@@ -31,15 +33,15 @@ export default function Search () {
                 type="text"
                 placeholder="Search..." />
 
-            {
+            <div className="search-result">{
                 users.length !== 0
                 &&
                 users.map((singleUser, i) => {
-                    return (<div className="search-result" key={i}>
-                        <div className='single-search-result' onClick={() => selectUser(singleUser)}>{singleUser.name}</div>
-                    </div>)
+                    return (
+                        <div key={i} className='single-search-result' onClick={() => selectUser(singleUser)}>{singleUser.user.name}</div>
+                    )
                 })
-            }
+            }</div>
         </div>
     )
 }

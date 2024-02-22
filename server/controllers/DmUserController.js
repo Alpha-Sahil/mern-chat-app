@@ -4,9 +4,20 @@ const Inbox = require('../models/Inbox')
 const Message = require('../models/Message')
 
 const users = async (request, response) => {
+    let inboxes = await Inbox.find({
+        users: {
+            $in: [request.query.currentUSerId]
+        }
+    })
+
     return response.status(200).json({
         status: 'success',
-        users: await User.find({})
+        users: await Promise.all(inboxes.map(async (inbox) => {
+            return {
+                inbox: inbox,
+                user: await User.findById(inbox.users.filter(user => user != request.query.currentUSerId)[0]) 
+            }
+        })),
     })
 }
 
@@ -17,20 +28,15 @@ const user = async (request, response) => {
 }
 
 const messages =  async (request, response) => {
-    let inbox = await Inbox.find({users: {$all: request.body.users} })
-
-    if (!inbox.length) return response.status(200).json({messages: []})
+    if (!request.body.users) return response.status(200).json({messages: []})
 
     return response.status(200).json({
-        messages: await Message.find({inbox: inbox[0]._id}),
-        inbox: inbox 
+        messages: await Message.find({inbox: request.body.users})
     })
 }
 
 const create = async (request, response) => {
     let { message, inbox, to, from } = request.body.data
-
-    if (!inbox) inbox = await CreateInbox.create([from._id, to._id])
 
     let createdMessage = await Message.create({message, inbox, from, to})
 

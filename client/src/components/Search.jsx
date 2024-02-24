@@ -16,6 +16,8 @@ export default function Search () {
             { params: {currentUser: user._id, text: e.target.value}},
             {Headers: {'x-token': localStorage.getItem('token')}})
 
+        console.log(results.data)
+
         setUsers(results.data.users)
     }
 

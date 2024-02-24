@@ -3,13 +3,15 @@ const User = require('../models/User')
 
 const search = async (request, response) => {
     let users = await User.find({ name: {$regex: '.*' + request.query.text + '.*', $options: 'i'}})
-    
+
     let searchResult = await Promise.all(
         users.filter(user => user._id.toHexString() != request.query.currentUser)
             .map(async (user) => {
+                let userInbox = await Inbox.find({users: {$all: [user._id, request.query.currentUser]}})
+
                 return {
                     user: user,
-                    inbox: await Inbox.find({users: {$all: [user._id, request.query.currentUser]}}) 
+                    inbox: userInbox.length ? userInbox[0] : '' 
                 }
     }))
 

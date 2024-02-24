@@ -47,13 +47,13 @@ export default function Index () {
                 headers: headers 
             },
         ).then( (response) => {
-            setCurrentInbox(selectedUser.inbox)
-
             setTimeout(() => {
                 setMessages(response.data.messages)
                 setIsLoading(false)
                 setmessageReceivedFrom(false)
             }, 500)
+    
+            setCurrentInbox(selectedUser.inbox)
         })
         .catch(error => console.log(error))
     }
@@ -61,17 +61,19 @@ export default function Index () {
     const sendMessage = async () => {
         let inbox
 
-        if (!currentInbox.length) {
+        if (!currentInbox) {
             inbox = await axios.post(`http://localhost:3000/inboxes/create`, {
                 users: [user._id, selectedUser._id]
             }, {headers: headers})
+
+            setCurrentInbox(inbox.data.inbox)
         }
 
         let message = [{
             message: typedMessage,
             from: user._id,
             to: selectedUser._id,
-            inbox: inbox.data.inbox,
+            inbox: currentInbox,
         }]
 
         socket.emit('message:send', message[0])
@@ -79,8 +81,6 @@ export default function Index () {
         setMessages([...messages, ...message])
 
         setTypedMessage('')
-
-        setCurrentInbox(inbox.data.inbox)
     }
 
     socket.on('message:recived', (data) => {        
@@ -133,7 +133,9 @@ export default function Index () {
                                                 <i className="fa-regular fa-user"></i>
                                             </div>
                                             <div className="main-message">
-                                                {message.message}
+                                                <p>
+                                                    {message.message}
+                                                </p>
                                             </div>
                                         </div>
                                     })}

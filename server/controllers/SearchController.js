@@ -7,7 +7,7 @@ const search = async (request, response) => {
     let searchResult = await Promise.all(
         users.filter(user => user._id.toHexString() != request.query.currentUser)
             .map(async (user) => {
-                let userInbox = await Inbox.find({users: {$all: [user._id, request.query.currentUser]}})
+                let userInbox = await Inbox.find({users: {$all: [user._id.toHexString(), request.query.currentUser]}})
 
                 return {
                     user: user,

@@ -1,21 +1,19 @@
-const connection = require('./connection')
-const env = require('dotenv').config
+require('./database/connection')
 const express = require('express')
 const app = express()
-const cookieParser = require('cookie-parser');
-const routes = require('./routes/route')
+const bodyParser = require('body-parser');
 const cors = require('cors')
-const bodyParser = require('body-parser')
+const routes = require('./route')
+const cookieParser = require('cookie-parser')
 
 app.use(cookieParser());
 
-app.use(cors({
-    origin: 'http://localhost:5173',
-}))
-
-app.use(bodyParser.urlencoded({ extended: true }))
-
-app.use(bodyParser.json())
+app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+app.use(cors({ origin: true, credentials: true }));
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/', routes)
 

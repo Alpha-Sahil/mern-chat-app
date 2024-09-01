@@ -1,20 +1,20 @@
-require('dotenv').config()
 const app = require('./index')
-const { onConnection } = require('./services/Sockets')
 const { createServer } = require('node:http');
-const { Server } = require('socket.io');
+// const Socket = require('./sockets')
+const Socket = require('./Sockets2')
 
-const options = {
-    cors: {
-        origin: "http://localhost:5173"
-    }
-}
-const PORT = process.env.PORT || 3000
 const server = createServer(app)
-const io = new Server(server, options)
 
-io.on('connection', onConnection);
+Socket.initiate()
 
-server.listen(PORT, () => {
-    console.log(`Server is running on port: ${PORT}`)
+// const socketServer = new Socket()
+
+Socket.io().attach(server)
+
+server.listen(3000, () => {
+    console.log('Server is running on port:3000')
 })
+
+// socketServer.initiateListeners()
+
+// module.exports = socketServer.io

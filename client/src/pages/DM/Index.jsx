@@ -4,6 +4,7 @@ import socket from "../../Socket.js"
 import useUsers from "../../hooks/useUsers"
 import axios from 'axios';
 import React, { useState, useEffect, useRef } from 'react'
+import tempProfileImage from '../../assets/images/logo.png'
 import { useNavigate } from "react-router-dom";
 
 export default function Index () {
@@ -155,7 +156,25 @@ export default function Index () {
                                     </div>
                                 </form>
                             </div>
-                            <div className="profile-container"></div>
+                            <div className="profile-container">
+                                <div className="profile-box">
+                                    <div className="profile-inner-container">
+                                        <div className="profile-image-container">
+                                            <div className="profile-image">
+                                                <img src={tempProfileImage} alt="Loading..." />
+                                            </div>
+                                            <div className="profile-information-container">
+                                                <div className="profile-information">
+                                                    <h2>{user.name}</h2>
+                                                </div>
+                                                <div className="profile-other-information">
+                                                    <h3>{user.email}</h3>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>

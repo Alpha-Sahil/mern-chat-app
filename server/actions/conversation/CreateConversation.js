@@ -1,6 +1,6 @@
-const conversationModel = require('../database/models/conversation')
+const conversationModel = require('../../database/models/conversation')
 const { check } = require('express-validator');
-const userModel = require('../database/models/users')
+const userModel = require('../../database/models/users')
 
 class CreateConversation {
     create(user, input) {

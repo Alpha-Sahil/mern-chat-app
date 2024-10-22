@@ -1,4 +1,5 @@
 import Header from '../components/Header';
+import ToastCallingNotification from '../components/ToastCallingNotification'
 import { Navigate, Outlet } from 'react-router-dom';
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
@@ -10,10 +11,12 @@ const AppLayout = () => {
 
     useEffect(() => {
         if (!cookies.token) navigateTo('/login')
-    }, [])
+    }, [cookies])
 
     return <div className="app">
         <Header />
+
+        <ToastCallingNotification />
 
         {cookies.token ? <Outlet /> : <Navigate to='/login' />}
     </div>

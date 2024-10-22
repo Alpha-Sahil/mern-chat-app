@@ -1,0 +1,169 @@
+.remote-video {
+    /* From https://css.glass */
+background: rgba(255, 122, 122, 0.25);
+border-radius: 16px;
+box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+backdrop-filter: blur(6.3px);
+-webkit-backdrop-filter: blur(6.3px);
+border: 1px solid rgba(255, 122, 122, 0.3);
+}
+
+.video-calling-box {
+    background-color: black;
+    height: 86vh;
+    border-radius: 1em;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 1em;
+    padding: 1em;
+}
+
+.video-calling-container {
+    padding: 1em;
+}
+
+.operations {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    gap: 1em;
+    padding: 0.2em 1em 0.2em 1em;
+}
+
+.video-calling-operations {
+    border-radius: 1em;
+}
+
+.operations-button {
+    padding: 2em;
+    border-radius: 50%;
+    background-color: red;
+}
+
+.call-end-button {
+    padding: 2em;
+    border-radius: 50%;
+    background-color: red;
+}
+
+.video {
+    height: 100% !important;
+    width: 100%;
+    background-color: white !important;
+    border-radius: 1em;
+    position: relative;
+    overflow: hidden;
+}
+
+video {
+    object-fit: cover;
+}
+
+.video-calling-operations {
+    background-color: white;
+    /* width: 100%; */
+}
+
+.self-video {
+    height: 20em;
+    width: 15em;
+    background-color: pink;
+    position: absolute;
+    right: 1em;
+    bottom: 1em;
+    border-radius: 1em;
+}
+
+.anwer-call-container {
+    display: flex;
+    gap: 1.5em;
+    padding: 1em;
+}
+
+.toast-options {
+    cursor: pointer;
+}
+
+.call-status-container {
+    text-align: center;
+    margin-top: 1em;
+    display: flex;
+    justify-content: center;
+    gap: 1em;
+    align-items: center;
+}
+
+/* From Uiverse.io by AbanoubMagdy1 */ 
+.calling-loader {
+    --dim: 1.5rem;
+    width: var(--dim);
+    height: var(--dim);
+    position: relative;
+    animation: spin988 2s linear infinite;
+}
+  
+.calling-loader .circle {
+    --color: #333;
+    --dim: 10px;
+    width: var(--dim);
+    height: var(--dim);
+    background-color: var(--color);
+    border-radius: 50%;
+    position: absolute;
+}
+  
+.calling-loader .circle:nth-child(1) {
+    top: 0;
+    left: 0;
+}
+  
+.calling-loader .circle:nth-child(2) {
+    top: 0;
+    right: 0;
+}
+  
+.calling-loader .circle:nth-child(3) {
+    bottom: 0;
+    left: 0;
+}
+  
+.calling-loader .circle:nth-child(4) {
+    bottom: 0;
+    right: 0;
+}
+  
+@keyframes spin988 {
+    0% {
+      transform: scale(1) rotate(0);
+    }
+  
+    20%, 25% {
+      transform: scale(1.3) rotate(90deg);
+    }
+  
+    45%, 50% {
+      transform: scale(1) rotate(180deg);
+    }
+  
+    70%, 75% {
+      transform: scale(1.3) rotate(270deg);
+    }
+  
+    95%, 100% {
+      transform: scale(1) rotate(360deg);
+    }
+}
+
+/* // const openToast = (type = 'success') => {
+    //     toast.current.classList = [type];
+    //     toast.current.style.animation = "open 0.3s cubic-bezier(.47,.02,.44,2) forwards";
+    //     toastTimer.current.classList.add("timer-animation");
+        
+    //     clearTimeout(countdown)
+        
+    //     countdown = setTimeout(() => {
+    //         closeToast();
+    //     }, 5000)
+    // } */

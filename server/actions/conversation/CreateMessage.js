@@ -1,11 +1,10 @@
 const CreateConversation = require('./CreateConversation')
-const conversationModel = require('../database/models/conversation')
-const messageModel = require('../database/models/message')
-const messageResponse = require('../responses/MessageResponse')
-const Socket = require('../Sockets2')
-const socketServer = require('../server')
+const conversationModel = require('../../database/models/conversation')
+const messageModel = require('../../database/models/message')
+const messageResponse = require('../../responses/MessageResponse')
+const Socket = require('../../Sockets2')
 const mongoose = require('mongoose');
-const userModel = require('../database/models/users')
+const userModel = require('../../database/models/users')
 const { check } = require('express-validator');
 
 class CreateMessage {

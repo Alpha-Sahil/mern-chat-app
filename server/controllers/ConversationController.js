@@ -1,8 +1,9 @@
 const conversation = require('../database/models/conversation')
-const CreateConversation = require('../actions/CreateConversation')
+const CreateConversation = require('../actions/conversation/CreateConversation')
 const ConversationResponse = require('../responses/ConversationResponse')
 const messageModel = require('../database/models/message')
 const MessageResponse = require('../responses/MessageResponse')
+const Socket = require('../Sockets2')
 const { validationResult } = require('express-validator');
 
 class ConversationController {
@@ -39,6 +40,19 @@ class ConversationController {
         response.json({
             status: 'success',
             messages: MessageResponse.collection(messages)
+        })
+    }
+
+    async call (request, response) {
+        const result = validationResult(request);
+        
+        if (!result.isEmpty()) return response.json({ errors: result.array() });
+
+        Socket.callConversationUser(request.body)
+
+        response.json({
+            status: 'success',
+            message: 'Call Initiated Successfully'
         })
     }
 }

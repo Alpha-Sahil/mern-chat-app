@@ -1,6 +1,7 @@
 import authSlice from './slices/auth'
-import userSlice from './slices/users'
 import conversationSlice from './slices/conversation'
+import userSlice from './slices/users'
+import webRTCSlice from './slices/webRTC'
 import { authApi } from './apis/auth'
 import { combineReducers } from '@reduxjs/toolkit';
 import { conversationApi } from './apis/conversation';
@@ -10,6 +11,7 @@ const rootReducer = combineReducers({
     auth: authSlice,
     users: userSlice,
     conversation: conversationSlice,
+    webRTC: webRTCSlice,
     [authApi.reducerPath]: authApi.reducer,
     [conversationApi.reducerPath]: conversationApi.reducer,
     [userApi.reducerPath]: userApi.reducer,

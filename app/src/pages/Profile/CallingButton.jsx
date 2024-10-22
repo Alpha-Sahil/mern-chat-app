@@ -3,21 +3,20 @@ import { useEffect, useState, useRef } from "react"
 import { useSelector } from "react-redux"
 import Peer from "../../services/peer"
 
-
 const CallingButton = (props) => {
     const callingButton = useRef('')
     const currentConversationUser = useSelector(state => state.conversation.currentConversationUser)
     const [buttonTitle, setButtonTitle] = useState(props.title)
 
     const call = async () => {
-        callingButton.current.classList.add('blink-button')
+        // callingButton.current.classList.add('blink-button')
 
-        setButtonTitle('Calling...')
+        // setButtonTitle('Calling...')
 
-        socket.emit('call:incoming', {
-            to: currentConversationUser._id,
-            offer: await Peer.getOffer()
-        })
+        // socket.emit('call:incoming', {
+        //     to: currentConversationUser._id,
+        //     offer: await Peer.getOffer()
+        // })
     }
 
     const handleIncomingCall = (data) => {
@@ -25,10 +24,10 @@ const CallingButton = (props) => {
     }
 
     useEffect(() => {
-        socket.on('call:incoming', handleIncomingCall)
+        // socket.on('call:incoming', handleIncomingCall)
         
         return () => {
-            socket.off('call:incoming')
+            // socket.off('call:incoming')
         }
     }, [socket])
 

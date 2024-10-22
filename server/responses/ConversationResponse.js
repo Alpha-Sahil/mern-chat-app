@@ -1,8 +1,10 @@
+const UserResponse = require('../responses/UserResponse')
 class ConversationResponse {
     document (conversation, loggedInUser) {
         return {
             ...conversation.toObject(),
-            conversationUser: conversation.users.filter(user => loggedInUser._id.toString() !== user._id.toString()).at(0)
+            // conversationUserTest: conversation.users.filter(user => loggedInUser._id.toString() !== user._id.toString()).at(0),
+            conversationUser: UserResponse.document(conversation.users.filter(user => loggedInUser._id.toString() !== user._id.toString()).at(0))
         }
     }
 

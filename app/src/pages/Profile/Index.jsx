@@ -1,8 +1,10 @@
 import { useSelector } from "react-redux"
 import CallingButton from './CallingButton'
+import { Link } from "react-router-dom"
 
 const Profile = () => {
     const currentConversationUser = useSelector(state => state.conversation.currentConversationUser)
+    const currentConversation = useSelector(state => state.conversation.currentConversation)
 
     return <div className="detail-area">
         <div className="detail-area-header">
@@ -16,13 +18,14 @@ const Profile = () => {
 
             <div className="detail-title">{ currentConversationUser.name }</div>
             
-            <div className="detail-subtitle">Created by Aysenur, 1 May 2020</div>
+            <div className="detail-subtitle">Member Since { currentConversationUser.joinedAt }</div>
             
             <div className="detail-buttons">
-                <CallingButton
-                    title="Call Group"
-                    icon="fa-solid fa-phone" />
-
+                <Link to={`/conversations/${currentConversation?._id}/video-call`}>
+                    <CallingButton
+                        title="Call Group"
+                        icon="fa-solid fa-phone" />
+                </Link>
                 <CallingButton
                     title="Video Chat"
                     icon="fa-solid fa-video" />

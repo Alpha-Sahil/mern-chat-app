@@ -19,21 +19,58 @@ const initiate = () => {
         })
 
         socket.on('call:incoming', (data) => {
-            if (_onlineUsers.hasOwnProperty(data.to)) {
-                _io.to(_onlineUsers[data.to]).emit('call:incoming', {offer: data.offer})
+            if (_onlineUsers[data.to]) {
+                _io.to(_onlineUsers[data.to]).emit('call:incoming', {
+                    offer: data.offer,
+                    socket: _onlineUsers[data.to],
+                    conversation: data.conversation
+                })
             }
+        })
+
+        socket.on('call:ended', (data) => {
+            if (_onlineUsers[data.to]) {
+                _io.to(_onlineUsers[data.to]).emit('call:ended')
+            }
+        })
+
+        socket.on('server:call:not-responded', (data) => {
+            if (data.to) {
+                _io.to(data.to).emit('client:call:not-responded')
+            }
+        })
+
+        socket.on('server:call:accepted', (data) => {
+            if (data.to) {
+                _io.to(data.to).emit('client:call:accepted', data)
+            }
+        })
+
+        socket.on('server:call:ended', (data) => {
+            if (_onlineUsers[data.to]) {
+                _io.to(_onlineUsers[data.to]).emit('client:call:ended')
+            } 
         })
     })
 }
 
 const sendMessage = (to, message) => {
-    _io.to(_onlineUsers[to]).emit('message:sent', message)
+    return _io.to(_onlineUsers[to]).emit('message:sent', message)
+}
+
+const callConversationUser = (data) => {
+    return _io.to(_onlineUsers[data.to]).emit('call:incoming', {
+        offer: data.offer,
+        socket: _onlineUsers[data.from],
+        conversation: data.conversation
+    })
 }
 
 module.exports = {
     _io,
-    _onlineUsers,
     io,
+    _onlineUsers,
     initiate,
-    sendMessage
+    sendMessage,
+    callConversationUser
 }

@@ -2,11 +2,14 @@ import SearchList from './SearchList'
 import { useCallback, useRef } from 'react'
 import { searchUsers, emptySearchedUsers } from '../redux/slices/users'
 import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
     const searchInput = useRef(null)
     const dispatch = useDispatch()
+    const navigateTo = useNavigate()
     const searchedUsers = useSelector(state => state.users.users)
+
     const handleSearchUsers = (e) => {
         dispatch(searchUsers(e.target.value))
     }
@@ -17,6 +20,11 @@ const Header = () => {
     })
     const toggleDarkMode = useCallback(() => {
         document.body.classList.toggle('dark-mode');
+    }, [])
+    const logOut = useCallback(() => {
+        document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+
+        navigateTo('/login')
     }, [])
 
 
@@ -55,7 +63,10 @@ const Header = () => {
                     <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
                 </svg>
             </div>
-            <img className="user-profile" src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/3364143/download+%281%29.png" alt="" />
+            <div className="settings" onClick={logOut}>
+                <i className="fa-solid fa-arrow-right-from-bracket"></i>
+            </div>
+            {/* <img className="user-profile" src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/3364143/download+%281%29.png" alt="" /> */}
         </div>
     </div>
 }

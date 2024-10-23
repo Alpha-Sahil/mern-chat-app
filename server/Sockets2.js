@@ -51,6 +51,14 @@ const initiate = () => {
                 _io.to(_onlineUsers[data.to]).emit('client:call:ended')
             } 
         })
+
+        socket.on("server:peer:nego:needed", ({ to, offer }) => {
+            _io.to(to).emit("client:peer:nego:needed", { from: socket.id, offer });
+        });
+
+        socket.on("server:peer:nego:done", ({ to, answer }) => {
+            _io.to(to).emit("client:peer:nego:final", { from: socket.id, answer });
+        });
     })
 }
 

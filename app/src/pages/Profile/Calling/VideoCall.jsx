@@ -19,7 +19,7 @@ const VideoCall = () => {
     const [videoCall, { isLoading }] = useVideoCallMutation()
 
     const callUser = useCallback(async () => {
-        let response = await videoCall({
+        await videoCall({
             to: currentConversationUser._id,
             offer: await Peer.getOffer(),
             from: user._id,
@@ -45,7 +45,7 @@ const VideoCall = () => {
     }, [localStream])
 
     const endCall = () => {
-        // socket.emit('server:call:ended', { to: currentConversationUser._id })
+        socket.emit('server:call:ended', { to: currentConversationUser._id })
     }
 
     const handleCallAccepted = useCallback(async () => {
@@ -68,7 +68,11 @@ const VideoCall = () => {
 
     const handleCallNotResponded = useCallback(() => changeCallStatusAndHideLoading('Call Not Responded'))
 
-    const handleCallEnded = useCallback(() => changeCallStatusAndHideLoading('Call Ended'), [])
+    const handleCallEnded = useCallback(() => {
+        changeCallStatusAndHideLoading('Call Ended')
+
+        setRemoteStream('')
+    }, [])
 
     const handleNegoNeeded = useCallback(async () => {
         const offer = await Peer.getOffer();
@@ -97,8 +101,10 @@ const VideoCall = () => {
     useEffect(() => {
         Peer.peer.addEventListener("track", async (e) => {
             const remoteStream = e.streams;
-            console.log(remoteStream[0])
+
             setRemoteStream(remoteStream[0]);
+
+            changeCallStatusAndHideLoading('Connected')            
         });
     }, []);
 

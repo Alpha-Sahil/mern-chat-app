@@ -14,6 +14,7 @@ const ToastCallingNotification = (props = {type: 'success'}) => {
     const user = JSON.parse(localStorage.getItem('user'))
     const dispatch = useDispatch()
     const [showToast, setShowToast] = useState(false) 
+    const [durationTimeout, setDurationTimeout] = useState()
     const toast = useRef()
     const toastTimer = useRef()
     const closeToastBtn = useRef()
@@ -39,6 +40,8 @@ const ToastCallingNotification = (props = {type: 'success'}) => {
         const answer = await Peer.getAnwser(remoteCallOffer)
 
         socket.emit('server:call:accepted', { to: remoteSocketId, answer: answer })
+
+        // clearTimeout(durationTimeout)
     }, [callingConversation])
 
     const closeToast = useCallback(() => {
@@ -61,15 +64,17 @@ const ToastCallingNotification = (props = {type: 'success'}) => {
             
             setShowToast(true)
 
-            setTimeout(() => {
+            let timeout = setTimeout(() => {
                 socket.emit('server:call:not-responded', {to: data.socket})
                 
                 closeToast()
             }, 30000);
+
+            setDurationTimeout(timeout)            
         })
 
         return () => {
-            socket.emit('server:call:ended', { to: currentConversationUser._id })
+            // socket.emit('server:call:ended', { to: currentConversationUser._id })
             socket.off('call:incoming')
             socket.off('call:ended')
         }

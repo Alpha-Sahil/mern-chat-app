@@ -362,7 +362,9 @@ html {
 .chat-area {
   display: flex;
   flex-direction: column;
-  overflow: auto;
+  overflow: scroll;
+  /* overflow-y: scroll; */
+  /* overflow: auto; */
 }
 .chat-area-header {
   display: flex;

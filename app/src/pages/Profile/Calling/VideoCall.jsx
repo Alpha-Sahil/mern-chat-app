@@ -3,7 +3,7 @@ import ReactPlayer from 'react-player'
 import { socket } from '../../../sockets/Index'
 import { useCallback, useState, useEffect } from 'react'
 import { useDispatch, useSelector } from "react-redux"
-import { useVideoCallMutation } from '../../../redux/apis/webRTC'
+import { useVideoCallMutation, useCallEndedMutation } from '../../../redux/apis/webRTC'
 import { setCallStatus } from "../../../redux/slices/webRTC"
 
 const VideoCall = () => {
@@ -15,15 +15,18 @@ const VideoCall = () => {
     const [remoteStream, setRemoteStream] = useState()
     const callStatus = useSelector(state => state.webRTC.callStatus)
     const currentConversationUser = useSelector(state => state.conversation.currentConversationUser)
+    const currentConversation = useSelector(state => state.conversation.currentConversation)
     const remoteSocketId = useSelector(state => state.webRTC.remoteSocketId)
     const [videoCall, { isLoading }] = useVideoCallMutation()
+    const [callEnded, { isLoading: callEndedProcessing }] = useCallEndedMutation()
 
     const callUser = useCallback(async () => {
         await videoCall({
             to: currentConversationUser._id,
             offer: await Peer.getOffer(),
             from: user._id,
-            conversation: currentConversationUser,
+            conversation: currentConversation,
+            callingUser: user
         })
     }, [])
     
@@ -44,8 +47,8 @@ const VideoCall = () => {
         }
     }, [localStream])
 
-    const endCall = () => {
-        socket.emit('server:call:ended', { to: currentConversationUser._id })
+    const endCall = async () => {
+        await callEnded({ from: user._id, conversation: currentConversation._id, to: currentConversationUser._id })
     }
 
     const handleCallAccepted = useCallback(async () => {

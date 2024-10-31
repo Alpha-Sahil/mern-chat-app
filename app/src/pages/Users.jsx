@@ -1,7 +1,7 @@
 import { useConversationsQuery } from '../redux/apis/conversation'
 import { useEffect, useMemo, useCallback } from 'react'
 import { useParams } from 'react-router-dom';
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import {
     setCurrentConversation as setCurrentConversationSlice,
     setCurrentConversationUser
@@ -10,12 +10,12 @@ import {
 const Users = () => {
     const { conversation: currentConversationFromUrl } = useParams();
     const user = JSON.parse(localStorage.getItem('user')) ?? {}
+    const currentConversation = useSelector(state => state.conversation.currentConversation)
     const dispatch = useDispatch()
     const { data, isLoading } = useConversationsQuery(user._id)
     const spinnerStyle = { width: '35px', height: '35px' }
     const setCurrentConversation = useCallback((conversation, user) => {
         history.pushState({}, null, `/conversations/${conversation._id}`)
-
         dispatch(setCurrentConversationSlice(conversation))
         dispatch(setCurrentConversationUser(user))
     }, [])
@@ -26,7 +26,9 @@ const Users = () => {
                 <div className='spinner' style={ spinnerStyle }></div>
             </div>
             :  data.conversations.map((conversation, i) => {
-                return <div className="msg online" key={ i } onClick={ () => setCurrentConversation(conversation, conversation.conversationUser) }>
+                return <div className={`msg online ${Boolean(currentConversation?._id == conversation?._id) && 'active'}`}
+                        key={ i }
+                        onClick={ () => setCurrentConversation(conversation, conversation.conversationUser) }>
                     <img className="msg-profile" src={`https://robohash.org/${conversation.conversationUser.name}`} alt="" />
                     <div className="msg-detail">
                         <div className="msg-username">
@@ -41,7 +43,7 @@ const Users = () => {
                     </div>
                 </div>
         })
-    }, [isLoading])
+    }, [isLoading, currentConversation])
 
     useEffect(() => {
         if (currentConversationFromUrl) {

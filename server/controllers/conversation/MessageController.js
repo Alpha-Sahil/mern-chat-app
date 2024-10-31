@@ -1,6 +1,6 @@
-const messageModel = require('../database/models/message')
-const MessageResponse = require('../responses/MessageResponse')
-const CreateMessage = require('../actions/conversation/CreateMessage')
+const messageModel = require('../../database/models/message')
+const MessageResponse = require('../../responses/MessageResponse')
+const CreateMessage = require('../../actions/conversation/CreateMessage')
 const { validationResult } = require('express-validator');
 
 class MessageController {

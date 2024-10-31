@@ -3,7 +3,7 @@ import ReactPlayer from 'react-player'
 import { socket } from '../../../sockets/Index'
 import { useCallback, useState, useEffect } from 'react'
 import { useDispatch, useSelector } from "react-redux"
-import { useVideoCallMutation } from '../../../redux/apis/webRTC'
+import { useVideoCallMutation, useCallEndedMutation } from '../../../redux/apis/webRTC'
 import { setCallStatus } from "../../../redux/slices/webRTC"
 
 const VideoCall = () => {
@@ -15,31 +15,29 @@ const VideoCall = () => {
     const [remoteStream, setRemoteStream] = useState()
     const callStatus = useSelector(state => state.webRTC.callStatus)
     const currentConversationUser = useSelector(state => state.conversation.currentConversationUser)
+    const currentConversation = useSelector(state => state.conversation.currentConversation)
     const remoteSocketId = useSelector(state => state.webRTC.remoteSocketId)
     const [videoCall, { isLoading }] = useVideoCallMutation()
+    const [callEnded, { isLoading: callEndedProcessing }] = useCallEndedMutation()
 
     const callUser = useCallback(async () => {
-        let response = await videoCall({
+        await videoCall({
             to: currentConversationUser._id,
             offer: await Peer.getOffer(),
             from: user._id,
-            conversation: currentConversationUser,
+            conversation: currentConversation,
+            callingUser: user
         })
     }, [])
     
     const startCamera = useCallback(async () => {
-        try {
-            let stream = await navigator.mediaDevices.getUserMedia({
-                video: true,
-                audio: true,
-            })
+        let stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: true,
+        })
 
-            setLocalStream(stream)
-
-        } catch (error) {
-            console.log(error)
-        }
-    }, [localStream])
+        setLocalStream(stream)
+    }, [])
 
     const closeCamera = useCallback(async () => {
         if (localStream) {
@@ -49,24 +47,18 @@ const VideoCall = () => {
         }
     }, [localStream])
 
-    const endCall = () => {
-        // socket.emit('call:ended', { to: currentConversationUser._id})
+    const endCall = async () => {
+        await callEnded({ from: user._id, conversation: currentConversation._id, to: currentConversationUser._id })
     }
 
-    const handleCallAccepted = useCallback( async () => {
+    const handleCallAccepted = useCallback(async () => {
         changeCallStatusAndHideLoading('connecting...', true)
 
         await startCamera()
-
-        console.log(localStream)
-
-        sendStreams()
-    }, [localStream])
+    }, [])
 
     const sendStreams = useCallback((data = null) => {
         if (data) Peer.setRemoteLocation(data.answer)
-
-        console.log(localStream)
 
         localStream.getTracks().forEach((track) => Peer.peer.addTrack(track, localStream));
     }, [localStream])
@@ -79,21 +71,63 @@ const VideoCall = () => {
 
     const handleCallNotResponded = useCallback(() => changeCallStatusAndHideLoading('Call Not Responded'))
 
-    const handleCallEnded = useCallback(() => changeCallStatusAndHideLoading('Call Ended'), [])
+    const handleCallEnded = useCallback(() => {
+        changeCallStatusAndHideLoading('Call Ended')
+
+        setRemoteStream('')
+    }, [])
+
+    const handleNegoNeeded = useCallback(async () => {
+        const offer = await Peer.getOffer();
+        
+        socket.emit("server:peer:nego:needed", { offer, to: remoteSocketId });
+    }, [remoteSocketId, socket]);
+    
+    const handleNegoNeedIncomming = useCallback(async ({ from, offer }) => {
+        const answer = await Peer.getAnwser(offer);
+        
+        socket.emit("server:peer:nego:done", { to: from, answer });
+    }, [socket]);
+    
+    const handleNegoNeedFinal = useCallback(async ({ answer }) => {
+        await Peer.setRemoteLocation(answer);
+    }, []);
+
+    useEffect(() => {
+        Peer.peer.addEventListener("negotiationneeded", handleNegoNeeded);
+        
+        return () => {
+            Peer.peer.removeEventListener("negotiationneeded", handleNegoNeeded);
+        };
+    }, [handleNegoNeeded]);
+
+    useEffect(() => {
+        Peer.peer.addEventListener("track", async (e) => {
+            const remoteStream = e.streams;
+
+            setRemoteStream(remoteStream[0]);
+
+            changeCallStatusAndHideLoading('Connected')            
+        });
+    }, []);
 
     useEffect(() => {
         // socket.on('call:incoming', handleCallAccepted)
         socket.on('client:call:not-responded', handleCallNotResponded)
         socket.on('client:call:accepted', sendStreams)
         socket.on('client:call:ended', handleCallEnded)
+        socket.on("client:peer:nego:needed", handleNegoNeedIncomming);
+        socket.on("client:peer:nego:final", handleNegoNeedFinal);
 
         return () => {
             socket.off('call:incoming')
             socket.off('client:call:not-responded')
             socket.off('client:call:accepted')
             socket.off('client:call:ended')
+            socket.off('client:peer:nego:needed')
+            socket.off('client:peer:nego:final')
         }
-    }, [socket])
+    }, [socket, localStream])
 
     useEffect(() => {
         if (!localStream) {
@@ -108,6 +142,10 @@ const VideoCall = () => {
             endCall()
             closeCamera()
         }
+    }, [localStream])
+
+    useEffect(() => {
+        if (remoteSocketId && localStream) sendStreams()
     }, [localStream])
 
     return <>

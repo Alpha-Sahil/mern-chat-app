@@ -1,13 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    // The call wasn't picked up.
     callStatus: 'Calling...',
     answer: null,
     remoteOffer: null,
     remoteSocketId: null,
     callingUser: null,
     conversation: null,
+    callingData: {}
 };
 
 const webRTC = createSlice({
@@ -36,6 +36,10 @@ const webRTC = createSlice({
 
         setConversation: (state, action) => {
             state.conversation = action.payload
+        },
+
+        setCallingData: (state, action) => {
+            state.callingData = action.payload
         }
     },
 })
@@ -46,7 +50,8 @@ export const {
     setRemoteSocketId,
     setCallStatus,
     setCallingUser,
-    setConversation
+    setConversation,
+    setCallingData
 } = webRTC.actions;
 
 export default webRTC.reducer;

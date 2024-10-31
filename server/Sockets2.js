@@ -51,6 +51,14 @@ const initiate = () => {
                 _io.to(_onlineUsers[data.to]).emit('client:call:ended')
             } 
         })
+
+        socket.on("server:peer:nego:needed", ({ to, offer }) => {
+            _io.to(to).emit("client:peer:nego:needed", { from: socket.id, offer });
+        });
+
+        socket.on("server:peer:nego:done", ({ to, answer }) => {
+            _io.to(to).emit("client:peer:nego:final", { from: socket.id, answer });
+        });
     })
 }
 
@@ -62,8 +70,30 @@ const callConversationUser = (data) => {
     return _io.to(_onlineUsers[data.to]).emit('call:incoming', {
         offer: data.offer,
         socket: _onlineUsers[data.from],
-        conversation: data.conversation
+        conversation: data.conversation,
+        from: data.from,
+        callingUser: data.callingUser
     })
+}
+
+const endCall = (data) => {
+    return _io.to(_onlineUsers[data.to]).emit('client:call:ended')
+}
+
+const callAccepted = (data) => {
+    return _io.to(_onlineUsers[data.to]).emit('client:call:accepted', data)
+}
+
+const callNotResponded = (data) => {
+    return _io.to(_onlineUsers[data.to]).emit('client:call:not-responded')
+}
+
+const negotiationNeeded = ({ to, offer }) => {
+    return _io.to(_onlineUsers[to]).emit("client:peer:nego:needed", { from: socket.id, offer });
+}
+
+const negotiationDone = ({ to, answer }) => {
+    _io.to(_onlineUsers[to]).emit("client:peer:nego:final", { from: socket.id, answer });
 }
 
 module.exports = {
@@ -72,5 +102,10 @@ module.exports = {
     _onlineUsers,
     initiate,
     sendMessage,
-    callConversationUser
+    callConversationUser,
+    endCall,
+    callAccepted,
+    callNotResponded,
+    negotiationNeeded,
+    negotiationDone
 }

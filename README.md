@@ -16,3 +16,7 @@ This is a fully functional chat application built using the popular MERN stack (
 3. Run the application:
   - Frontend: `cd frontend` && `npm run dev`
   - Backend: `cd backend` && `npx nodemon server.js`
+
+![image](https://github.com/user-attachments/assets/42a0d254-34df-441e-bfd2-f5b09323f3d9)
+
+

@@ -1,7 +1,16 @@
+import { useCookies } from "react-cookie";
 import { useEffect } from 'react'
+import { useNavigate } from "react-router-dom";
 
 const AuthLayout = (props) => {
-    useEffect(() => { import('../css/auth.css') }, [])
+    const navigateTo = useNavigate()
+    const [cookies, removeCookie] = useCookies([]);
+
+    useEffect(() => {
+        if (cookies.token) navigateTo('/')
+        
+        else import('../css/auth.css')
+    }, [])
 
     return <div className="wrapper fadeInDown">
     <div id="formContent">

@@ -2,12 +2,10 @@ import SearchList from './SearchList'
 import { useCallback, useRef } from 'react'
 import { searchUsers, emptySearchedUsers } from '../redux/slices/users'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from "react-router-dom";
 
 const Header = () => {
     const searchInput = useRef(null)
     const dispatch = useDispatch()
-    const navigateTo = useNavigate()
     const searchedUsers = useSelector(state => state.users.users)
 
     const handleSearchUsers = (e) => {
@@ -24,7 +22,7 @@ const Header = () => {
     const logOut = useCallback(() => {
         document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 
-        navigateTo('/login')
+        window.location = 'http://localhost:5173/login';
     }, [])
 
 

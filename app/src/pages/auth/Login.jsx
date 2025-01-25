@@ -1,13 +1,11 @@
 import AuthLayout from '../../layouts/AuthLayout'
 import { useDispatch } from 'react-redux'
 import { useCallback, useMemo, useState } from 'react'
-import { useNavigate } from "react-router-dom";
 import { useLoginMutation } from '../../redux/apis/auth'
 import { createUser as createUserState } from '../../redux/slices/auth'
 
 const Login = () => {
     const dispatch = useDispatch()
-    const navigateTo = useNavigate()
     const [form, setForm] = useState({ email: '', password: '' })
     const [errors, setErrors] = useState([])
     const [login, { isLoading }] = useLoginMutation()
@@ -31,7 +29,7 @@ const Login = () => {
 
             dispatch(createUserState(response.data.user))
 
-            navigateTo('/')
+            window.location = 'http://localhost:5173';
         }
     }, [form])
     const updateForm = useCallback((e) => {

@@ -1,7 +1,13 @@
+import { useCookies } from "react-cookie";
 import { useEffect } from 'react'
 
 const AuthLayout = (props) => {
-    useEffect(() => { import('../css/auth.css') }, [])
+    const [cookies, removeCookie] = useCookies([]);
+    useEffect(() => {
+        if (cookies.token) window.location = 'http://localhost:5173';
+
+        else import('../css/auth.css')
+    }, [])
 
     return <div className="wrapper fadeInDown">
     <div id="formContent">
